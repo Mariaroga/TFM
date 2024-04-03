@@ -1,0 +1,50 @@
+*LECTURA BASE DE DATOS*
+#leer csv
+df <- read.csv2("~/Desktop/DATABASE.csv")
+#para mostrar el número de variables y observaciones
+num_variables <- ncol(df)
+num_observaciones <- nrow(df)
+cat("La base de datos está formada por", num_variables, "variables y", num_observaciones, "observaciones.\n")
+#tendré datos de compuestos sin identificar (no sabemos si podemos compartir los compuestos) en las librerías por lo que le asignamos el nombre compuesto 1 a cada uno de los metabolitos detectados (en este caso mantengo las dos últimas columnas)
+nombres_ultimas <- colnames(df)[(ncol(df)-1):ncol(df)]
+nombres_nuevos <- paste("Compuesto", 1:(ncol(df)-2))
+nombres_totales <- c(nombres_nuevos, nombres_ultimas)
+colnames(df) <- nombres_totales
+
+*PREPARACIÓN DE LA BASE DE DATOS*
+#comprobamos el tipo de variables
+options(max.print = 10000)
+str(df)
+capture.output(str(df), file = "estructura_variables_datos.txt")
+#cambio de las variables categoricas a factor (en estas bases de datos son NASH y Fibrosis, que luego serán diferentes
+df$FIBROSI<-as.factor(df$FIBROSI)
+df$NASH<-as.factor(df$NASH)
+#eliminamos aquellas filas que contienen valores faltantes
+datos<-na.omit(df) #conjunto de datos de trabajo
+#para eliminar las columnas que indican el grupo al que pertenecen (para la realización de la estadística no supervisada)
+data_NF<-datos[, -c(102:103)]
+#resumen de los datos
+summary(data_NF)
+stat.desc(data_NF)
+#se puede observar que las variables no están normalizadas (no lo estarán en la base de datos real)
+boxplot(data_NF) #lo haremos en funcion de la intensidad de cada pico (intensidad de cada pico por paciente)
+
+*NORMALIZACIÓN DE LA BASE DE DATOS*
+
+*REDUCCIÓN DE VARIABLES*
+#comprobacion de la normalidad
+df.saphiro<-apply(data_NF, 2, shapiro.test)
+df.saphiro
+#comprobar si tenemos variables muy fuertemente relacionadas entre si:
+matrizCorr<-cor(data_NF)#matriz de correlación
+#grafico
+corrplot(matrizCorr, order="hclust", tl.cex= .35)
+#encontrar las variables relacionadas con umbral de correlación .75
+ElevadaCorr<-findCorrelation(matrizCorr, .75)
+#variables altamente relacionadas
+ElevadaCorr
+#para sacar las variables con elevada correlación
+data_NF_simpl<-data_NF[,-c(ElevadaCorr)]
+segCorr <- cor(data_NF_simpl)
+corrplot(segCorr, order = "hclust", tl.cex = .35)
+```
