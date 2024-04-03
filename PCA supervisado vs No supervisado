@@ -1,0 +1,24 @@
+#una vez tenemos las variables reducidas haemos un PCA no supervisado:
+ir.pca <- prcomp(data_NF_simpl, center = TRUE, scale. = TRUE)
+plot(ir.pca, type = "l")
+
+g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
+              ellipse = TRUE, circle = TRUE, varname.size = 0)
+g <- g + theme(legend.direction = 'horizontal', 
+               legend.position = 'top')
+print(g)
+summary(ir.pca)
+distancias <- dist(ir.pca$x)
+head(as.matrix(distancias))#sin definir los grupos
+ir.pca <- prcomp(data_NF_simpl,
+                 center = TRUE,
+                 scale. = TRUE)
+plot(ir.pca, type = "l")
+
+g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
+              groups = ir.species, ellipse = TRUE, 
+              circle = TRUE)
+g <- g + scale_color_discrete(name = '')
+g <- g + theme(legend.direction = 'horizontal', 
+               legend.position = 'top')
+print(g)
