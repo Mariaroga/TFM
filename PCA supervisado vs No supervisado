@@ -1,24 +1,87 @@
+```{r}
+install.packages("ggbiplot")
+library(ggplot2)
+library(ggbiplot)
 #una vez tenemos las variables reducidas haemos un PCA no supervisado:
 ir.pca <- prcomp(data_NF_simpl, center = TRUE, scale. = TRUE)
 plot(ir.pca, type = "l")
 
 g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
-              ellipse = TRUE, circle = TRUE, varname.size = 0)
+               varname.size = 0)
 g <- g + theme(legend.direction = 'horizontal', 
                legend.position = 'top')
 print(g)
 summary(ir.pca)
 distancias <- dist(ir.pca$x)
-head(as.matrix(distancias))#sin definir los grupos
+head(as.matrix(distancias))
+#definiento los grupos:
 ir.pca <- prcomp(data_NF_simpl,
                  center = TRUE,
                  scale. = TRUE)
 plot(ir.pca, type = "l")
 
-g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
+ir.species <- data_NA[, 102]
+
+g_grupo <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
               groups = ir.species, ellipse = TRUE, 
-              circle = TRUE)
-g <- g + scale_color_discrete(name = '')
-g <- g + theme(legend.direction = 'horizontal', 
+              circle = TRUE, varname.size = 0)
+g_grupo <- g_grupo + scale_color_discrete(name = '')
+g_grupo <- g_grupo + theme(legend.direction = 'horizontal', 
                legend.position = 'top')
-print(g)
+print(g_grupo)
+
+ir.fibrosi <- data_NA[, 103]
+
+g_fibrosi <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
+              groups = ir.fibrosi, ellipse = TRUE, 
+              circle = TRUE, varname.size = 0)
+g_fibrosi <- g_fibrosi + scale_color_discrete(name = '')
+g_fibrosi <- g_fibrosi + theme(legend.direction = 'horizontal', 
+               legend.position = 'top')
+print(g_fibrosi)
+
+```
+*PCA Balanceo*
+```{r}
+install.packages("ggbiplot")
+library(ggplot2)
+library(ggbiplot)
+install.packages("ROSE")
+library(ROSE)
+data<-cbind(segTrainTrans,ir.species)######con nash
+table(data$ir.species)
+prop.table(table(data$ir.species))
+data.rose <- ROSE(ir.species ~ ., data = data, seed = 1)$data
+set.seed(2000)
+#OVERSAMPLING
+data_balanced_over <- ovun.sample(ir.species~ ., data = data, method = "over",N = 150)$data
+table(data_balanced_over$ir.species)
+ir.species_balanced <- data_balanced_over[, 54]
+data_PC_NF<-data_balanced_over[,-c(54)]
+
+ir.pca <- prcomp(data_PC_NF,
+                 center = TRUE,
+                 scale. = TRUE) 
+
+plot(ir.pca, type = "l")
+
+g_balanceado <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
+              groups = ir.species_balanced, ellipse = TRUE, 
+              circle = TRUE, varname.size = 0)
+g_balanceado <- g_balanceado + scale_color_discrete(name = '')
+g_balanceado <- g_balanceado + theme(legend.direction = 'horizontal', 
+               legend.position = 'top')
+print(g_balanceado)
+
+
+#UNDERSAMPLING
+
+data_balanced_under <- ovun.sample(ir.species~ ., data = data, method = "under",N = 25)$data
+table(data_balanced_under$ir.species)
+g_balanceado_under <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
+              groups = ir.species_balanced, ellipse = TRUE, 
+              circle = TRUE, varname.size = 0)
+g_balanceado_under <- g_balanceado_under + scale_color_discrete(name = '')
+g_balanceado_under <- g_balanceado_under + theme(legend.direction = 'horizontal', legend.position = 'top')
+print(g_balanceado_under)
+```
