@@ -26,7 +26,6 @@ library(pastecs)
 options(max.print = 10000)
 str(df)
 capture.output(str(df), file = "estructura_variables_datos.txt")
-
 #cambio de las variables numéricas a variables categóricas:
 df$FIBROSI<-as.factor(df$FIBROSI)
 df$NASH<-as.factor(df$NASH)
@@ -42,7 +41,6 @@ boxplot(data_NF) #lo haremos en funcion de la intensidad de cada pico
 #comprobacion de la distribucion normal de cada una de las variables
 df.saphiro<-apply(data_NF, 2, shapiro.test)
 df.saphiro
-
 ```
 *Normalización*
 
