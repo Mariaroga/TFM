@@ -10,10 +10,11 @@ num_variables <- ncol(df)
 num_observaciones <- nrow(df)
 cat("La base de datos está formada por", num_variables, "variables y", num_observaciones, "observaciones.\n")
 #tendré datos de compuestos sin identificar (no sabemos si podemos compartir la ID de los compuestos) en las librerías por lo que le asignamos el nombre compuesto 1 a cada uno de los metabolitos detectados (en este caso mantengo las dos últimas columnas)
-nombres_ultimas <- colnames(df)[(ncol(df)-1):ncol(df)]
-nombres_nuevos <- paste("Compuesto", 1:(ncol(df)-2))
-nombres_totales <- c(nombres_nuevos, nombres_ultimas)
-colnames(df) <- nombres_totales
+#nombres_ultimas <- colnames(df)[(ncol(df)-1):ncol(df)]
+#nombres_nuevos <- paste("Compuesto", 1:(ncol(df)-2))
+#nombres_totales <- c(nombres_nuevos, nombres_ultimas)
+#colnames(df) <- nombres_totales
+#Creado sin ser código porque toddavía no dispongo de esta base de datos
 ```
 
 *Comprobación y cambio de tipo de variables*
